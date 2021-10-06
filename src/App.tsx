@@ -4,12 +4,12 @@ import './App.css';
 
 import {Route} from 'react-router-dom';
 
-import NewsFeed from './components/NewsFeed';
 import NavBar from './components/NavBar';
 import Login from './containers/Auth/Login';
 import Register from './containers/Auth/Register';
-import Profile from './components/Profile';
 import services from './services';
+import Profile from './containers/Profile';
+import NewsFeed from './containers/NewsFeed';
 
 
 function App(props:any) {

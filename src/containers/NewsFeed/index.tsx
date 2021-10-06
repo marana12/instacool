@@ -1,11 +1,11 @@
 import { connect } from "react-redux";
 import React,{Component} from "react";
-import Container from "./Container";
-import Post from './Post'
 import { ThunkDispatch } from "redux-thunk";
 import { bindActionCreators } from "redux";
-import * as postsDuck from '../ducks/Posts';
+import * as postsDuck from '../../ducks/Posts';
 import logo from '../../src/assets/loader.gif'
+import Container from "../../components/Container";
+import Post from "../../components/Post";
 interface INewsFeedProps{
     fetchPosts:() => void,
     like:(a:string)=>void,

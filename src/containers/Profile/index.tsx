@@ -1,12 +1,13 @@
 import React,{Component} from "react";
-import ProfileImg from '../components/ProfileImg';
-import Card from '../components/Card';
-import Button from "./Button";
-import * as postsDuck from '../ducks/Posts';
+import * as postsDuck from '../../ducks/Posts';
 import { connect } from "react-redux";
 import { ThunkDispatch } from "redux-thunk";
 import { bindActionCreators } from "redux";
-import services from "../services";
+import services from "../../services";
+import ProfileImg from "../../components/ProfileImg";
+import Button from "../../components/Button";
+import Card from "../../components/Card";
+import { submit } from "redux-form";
 const {auth} = services;
 const style={
     container:{
@@ -32,18 +33,21 @@ const style={
         height:'auto',
     }as React.CSSProperties,
 }
-interface IProfileProps{
+export interface IProfileProps{
     fetchPosts:() => void,
+    submitProfileImg:() =>void,
+    handleProfileImageSubmit:(a:{file:File}) => void,
     fetched:boolean,
     loading:boolean,
     data:postsDuck.IPost[][]
     
 }
+
  class Profile extends Component<IProfileProps>{
     constructor(props:IProfileProps){
         super(props)
         const {fetchPosts,fetched,data} = props;
-        console.log(data)
+
         if(fetched){
             return
         }else{
@@ -53,12 +57,12 @@ interface IProfileProps{
         }
     }
     public render(){
-        const { data } = this.props;
+        const { data,submitProfileImg,handleProfileImageSubmit } = this.props;
 
         return(
             <div style={style.container}>
                 <div style={style.topRow}>
-                    <ProfileImg/>
+                    <ProfileImg onSubmit={handleProfileImageSubmit} submitProfileImg={submitProfileImg} handleProfileImageSubmit={handleProfileImageSubmit}  />
                     <Button>Add</Button>
                 </div>
                 <div style={style.imgRow}>
@@ -106,5 +110,8 @@ const mapStateToProps = (state:any) => {
         data:posts
     }
 };
-const mapDispatchToProps = (dispatch:ThunkDispatch<any,any,any>) => bindActionCreators(postsDuck, dispatch);
+const mapDispatchToProps = (dispatch:ThunkDispatch<any,any,any>) => bindActionCreators({
+    ...postsDuck,
+    submitProfileImg:() => submit('profileImg')},
+    dispatch);
 export default connect(mapStateToProps,mapDispatchToProps)(Profile);

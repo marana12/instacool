@@ -142,3 +142,7 @@ export const share = (id:string) =>
             imageUrl
         }} as IDataPost));
     }
+export const handleProfileImageSubmit = (payload: {file:File}) =>
+    async (dispatch:Dispatch, getState:() => any, {}:IServices)=>{
+        console.log(payload)
+    }
