@@ -9,21 +9,24 @@ import { Provider } from 'react-redux';
 import { createStore,combineReducers,applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
 import * as reducers from '../src/ducks'
+import {loadUserInitialData} from './ducks/Users'
 import services from './services';
 import {reducer as formReducer} from 'redux-form';
 
-const history = createBrowserHistory();
 const store= createStore(combineReducers({
   ...reducers,
   form:formReducer
 }),applyMiddleware(thunk.withExtraArgument(services)));
+
+const loadInitialData = () => store.dispatch(loadUserInitialData)
+const history = createBrowserHistory();
 
 ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
   
       <Router history={history}>
-            <App history ={history}/>   
+            <App history ={history} loadInitialData={loadInitialData}/>   
       </Router>
 
 

@@ -1,9 +1,10 @@
 import { AnyAction, Dispatch } from "redux";
 import {IServices} from '../services';
 import {getDocs,collection,Timestamp, getDoc,doc ,orderBy, query,limit } from 'firebase/firestore';
-import {ref,getDownloadURL,uploadBytes}  from "firebase/storage";
+import {ref,getDownloadURL,uploadBytes,}  from "firebase/storage";
 import { fireStore,storage } from '../services/firebase'
 import {download} from '../utils';
+import { setProfileImage } from "./Users";
 const START = 'posts/fetch-start';
 const SUCCESS = 'posts/fetch-success';
 const ERROR = 'posts/fetch-error';
@@ -142,7 +143,22 @@ export const share = (id:string) =>
             imageUrl
         }} as IDataPost));
     }
-export const handleProfileImageSubmit = (payload: {file:File}) =>
-    async (dispatch:Dispatch, getState:() => any, {}:IServices)=>{
-        console.log(payload)
+export const handleProfileImageSubmit = (payload: {profileImg:File}) =>
+    async (dispatch:Dispatch, getState:() => any, {auth}:IServices)=>{
+        if(!auth.currentUser){
+            return;
+        }
+        const {uid} = auth.currentUser;
+
+
+        const storageRef =  ref(storage,'profileImages/'+ uid + '.jpg');
+        const response = await uploadBytes(storageRef, payload.profileImg).then((snapshot) => {
+            console.log('--snapshot--');
+            console.log(snapshot);
+
+            return snapshot;
+          });
+        const url = await getDownloadURL(response.ref);
+        dispatch(setProfileImage(url));
+        
     }

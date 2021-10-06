@@ -36,10 +36,11 @@ const style={
 export interface IProfileProps{
     fetchPosts:() => void,
     submitProfileImg:() =>void,
-    handleProfileImageSubmit:(a:{file:File}) => void,
+    handleProfileImageSubmit:(a:{profileImg:File}) => void,
     fetched:boolean,
     loading:boolean,
-    data:postsDuck.IPost[][]
+    data:postsDuck.IPost[][],
+    profileImage:string
     
 }
 
@@ -57,12 +58,12 @@ export interface IProfileProps{
         }
     }
     public render(){
-        const { data,submitProfileImg,handleProfileImageSubmit } = this.props;
+        const { data,submitProfileImg,handleProfileImageSubmit,profileImage } = this.props;
 
         return(
             <div style={style.container}>
                 <div style={style.topRow}>
-                    <ProfileImg onSubmit={handleProfileImageSubmit} submitProfileImg={submitProfileImg} handleProfileImageSubmit={handleProfileImageSubmit}  />
+                    <ProfileImg onSubmit={handleProfileImageSubmit} submitProfileImg={submitProfileImg} handleProfileImageSubmit={handleProfileImageSubmit} profileImage={profileImage} />
                     <Button>Add</Button>
                 </div>
                 <div style={style.imgRow}>
@@ -85,8 +86,10 @@ export interface IProfileProps{
 }
 const mapStateToProps = (state:any) => {
     const {Posts: {data,fetched,fetching}} = state;
-    const loading = fetching || !fetched;
+    const {Users: {profileImage:tempPI}} = state;
 
+    const loading = fetching || !fetched;
+    const profileImage = tempPI || "https://reptor.com/Doctors/Content/Media/LandingPage/defaultImg/profile.png";
     const filteredPosts = Object.keys(data).reduce((acc,el)=>{
         if(data[el].userId !== auth.currentUser?.uid){
             return acc;
@@ -107,7 +110,8 @@ const mapStateToProps = (state:any) => {
     return {
         loading,
         fetched,
-        data:posts
+        data:posts,
+        profileImage,
     }
 };
 const mapDispatchToProps = (dispatch:ThunkDispatch<any,any,any>) => bindActionCreators({

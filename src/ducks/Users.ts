@@ -1,10 +1,17 @@
-import { Dispatch } from "redux";
+import { AnyAction, Dispatch } from "redux";
 import {IServices} from '../services';
 import {signInWithEmailAndPassword, createUserWithEmailAndPassword,updateProfile,UserCredential } from "firebase/auth";
 import {setDoc,doc  } from 'firebase/firestore';
 import { fireStore } from '../services/firebase'
-// import { doc, setDoc } from "@firebase/firestore";
+import { type } from "os";
 
+const SET_PROFILE_IMAGE='user/set-profile-image';
+const GET_PROFILE_IMAGE='user/get-profile-image';
+
+export const setProfileImage = (payload:string) => ({
+    type:SET_PROFILE_IMAGE,
+    payload,
+})
 export interface ILogin {
     first_name:string,
     last_name:string,
@@ -12,8 +19,18 @@ export interface ILogin {
     password:string
 }
 
-export default function reducer(state={}) {
-    return state;
+export default function reducer(state={},action:AnyAction) {
+    switch(action.type){
+        case SET_PROFILE_IMAGE:{
+            return {
+                ...state,
+                profileImage:action.payload
+            }
+        } 
+        default:{
+            return state;
+        }
+    }
 }
 
 export const login = (login:ILogin) => 
@@ -62,3 +79,7 @@ export const register = (register:ILogin) =>
 
         }
     
+export const loadUserInitialData = () =>
+    async (dispatch:Dispatch, getState:() => any, {auth}:IServices) =>{
+        console.log(auth)
+    }

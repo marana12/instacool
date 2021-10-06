@@ -1,9 +1,7 @@
 import React,{useEffect,useState} from 'react';
 import './App.css'; 
-
-
 import {Route} from 'react-router-dom';
-
+import {History} from 'history';
 import NavBar from './components/NavBar';
 import Login from './containers/Auth/Login';
 import Register from './containers/Auth/Register';
@@ -11,8 +9,11 @@ import services from './services';
 import Profile from './containers/Profile';
 import NewsFeed from './containers/NewsFeed';
 
-
-function App(props:any) {
+interface IAppProps{
+  history:History,
+  loadInitialData:() => void,
+}
+function App(props:IAppProps) {
 
   const [state,setState] = useState({
     loading:true
@@ -25,6 +26,8 @@ function App(props:any) {
       const pathName = window.location.pathname;
       const {history} = props;
       if(user){
+        const {loadInitialData} = props;
+        loadInitialData();
         if (['/','/login','/register'].indexOf(pathName) > -1 ){
           history.push('/app/newsfeed');
         }
