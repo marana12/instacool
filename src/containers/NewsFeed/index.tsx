@@ -3,7 +3,7 @@ import React,{Component} from "react";
 import { ThunkDispatch } from "redux-thunk";
 import { bindActionCreators } from "redux";
 import * as postsDuck from '../../ducks/Posts';
-import logo from '../../src/assets/loader.gif'
+import defaultImg from '../../assets/loader.gif';
 import Container from "../../components/Container";
 import Post from "../../components/Post";
 interface INewsFeedProps{
@@ -12,7 +12,8 @@ interface INewsFeedProps{
     share:(a:string)=>void,
     fetched:boolean,
     loading:boolean,
-    data:postsDuck.IDataPost
+    data:postsDuck.IDataPost,
+    likePost:postsDuck.ILikePost,
     
 }
  class NewsFeed extends Component<INewsFeedProps>{
@@ -29,47 +30,67 @@ interface INewsFeedProps{
          }
      }
     public render(){
-        const {data,loading,fetched} =this.props;
-        console.log("Loading: "+loading," Fetched: "+ fetched)
+        const {data,loading,fetched,likePost} =this.props;
         return(
             <div style={{marginTop:'40px'}}>
                 <Container center={false} >
-                    
-                    {Object.keys(data).map(x => {
-                        const post = data[x]
+                    {
+                        fetched ?
+                            Object.keys(data).map(x => {
+                                const post = data[x]
+                                if(likePost.id){
+                                    if(x === likePost.id){
+                                        post.like=likePost.hasLike || false
+                                    }
+                                }
+                                return <div key={x} style={{margin:'3px auto'}}>
+                                            <Post
+                                                img={ post.imageUrl}
+                                                like={this.handleLike(x)}
+                                                share={this.handleShare(x)}
+                                                hasLike={post.like}
+                                                comment={post.comment}/>
+                                            
+                                    </div>
+                            })
+                            :
+                            <div style={{margin:'3px auto'}}>
+                                                <Post
+                                                img={defaultImg}
+                                                like={this.handleLike('')}
+                                                share={this.handleShare('')}
+                                                hasLike={false}
+                                                comment={''}/>
+                                            
+                                    </div>
 
-                        return <div key={x} style={{margin:'3px auto'}}>
-
-                                    <Post
-                                        img={  post.imageUrl}
-                                        like={this.handleLike(x)}
-                                        share={this.handleShare(x)}/>
-                                    
-                            </div>
-                    })}
+                    }
+                  
 
                 </Container>
                 
             </div>
         )
     }
-    private handleLike =(id:string) => () =>{
+    private handleLike = (id:string) => () =>{
         const {like} = this.props;
-        like(id);
+       like(id);
     }
-    private handleShare =(id:string) => () =>{
+    private handleShare = (id:string) => () =>{
         const {share} = this.props;
         share(id);
     }
 }
 
 const mapStateToProps = (state:any) => {
-    const {Posts: {data,fetched,fetching}} = state;
+    const {Posts: {data,fetched,fetching,likePost}} = state;
     const loading = fetching || !fetched;
     return {
         loading,
         fetched,
-        data
+        data,
+        likePost
+        
     }
 };
 const mapDispatchToProps = (dispatch:ThunkDispatch<any,any,any>) => bindActionCreators(postsDuck, dispatch);

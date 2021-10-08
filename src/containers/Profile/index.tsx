@@ -8,6 +8,8 @@ import ProfileImg from "../../components/ProfileImg";
 import Button from "../../components/Button";
 import Card from "../../components/Card";
 import { submit } from "redux-form";
+import profile from '../../assets/profile.png';
+import defaultImg from '../../assets/loader.gif';
 const {auth} = services;
 const style={
     container:{
@@ -45,21 +47,23 @@ export interface IProfileProps{
 }
 
  class Profile extends Component<IProfileProps>{
+     state = {
+         posts:[]
+     }
     constructor(props:IProfileProps){
         super(props)
-        const {fetchPosts,fetched,data} = props;
+        const {fetchPosts,fetched} = props;
 
         if(fetched){
             return
         }else{
-
            fetchPosts();
 
         }
     }
     public render(){
-        const { data,submitProfileImg,handleProfileImageSubmit,profileImage } = this.props;
-
+        const { data,submitProfileImg,handleProfileImageSubmit,profileImage,fetched } = this.props;
+       
         return(
             <div style={style.container}>
                 <div style={style.topRow}>
@@ -67,16 +71,36 @@ export interface IProfileProps{
                     <Button>Add</Button>
                 </div>
                 <div style={style.imgRow}>
-                {
-                    data.map((x, i)=>
-                        <div key={i} style={style.row}>
-                            {x.map((y,ind) => 
-                                    <Card key={ind}><img style={style.img} src={y.imageUrl}/></Card>
+                    
+                {   fetched ?
+                        data.map((x, i)=>
+                            <div key={i} style={style.row}>
+                                {x.map((y,ind) => 
+                                        <Card key={ind}><img style={style.img} src={(y.imageUrl)}/></Card>
 
-                                )}
-                        </div>
-                    )
+                                    )}
+                            </div>
+                        ):
+                        <React.Fragment>
+                            <div style={style.row}>
+                                <Card ><img style={style.img} src={defaultImg}/></Card>
+                                <Card ><img style={style.img} src={defaultImg}/></Card>
+                                <Card ><img style={style.img} src={defaultImg}/></Card>
+                            </div> 
+                            <div style={style.row}>
+                                <Card ><img style={style.img} src={defaultImg}/></Card>
+                                <Card ><img style={style.img} src={defaultImg}/></Card>
+                                <Card ><img style={style.img} src={defaultImg}/></Card>
+                            </div> 
+                        </React.Fragment>
+
+                        
                 }
+    
+ 
+                      
+                        
+                
                 </div>
 
 
@@ -89,7 +113,7 @@ const mapStateToProps = (state:any) => {
     const {Users: {profileImage:tempPI}} = state;
 
     const loading = fetching || !fetched;
-    const profileImage = tempPI || "https://reptor.com/Doctors/Content/Media/LandingPage/defaultImg/profile.png";
+    const profileImage = tempPI || profile;
     const filteredPosts = Object.keys(data).reduce((acc,el)=>{
         if(data[el].userId !== auth.currentUser?.uid){
             return acc;

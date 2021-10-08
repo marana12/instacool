@@ -51,18 +51,25 @@ export default () => {
             .get();
 
         const result:{id?:string} = {};
+        var hasLike:boolean=false;
+        var countLikes:number = 0;
         snaps.forEach(x => Object.assign(result, {...x.data(), id: x.id}));
+        console.log(snaps)
         if(result.id){
-           await db.collection('likes').doc(result.id).delete()
+           await db.collection('likes').doc(result.id).delete();
         }
         if(!result.id){
             await db.collection('likes').doc().set({
                 userId:uid,
                 postId,
                 createdAt: new Date(),
-            })
+            });
+            hasLike = true
          }
-        res.sendStatus(204);
+        res.status(200).send({
+            id:postId,
+            hasLike
+        });
     });
 
     app.get('/posts/:postId/share',async (req:IRequest ,res:any)=>{

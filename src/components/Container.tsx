@@ -1,13 +1,11 @@
 import React,{Component} from "react";
 const style = (center:boolean) =>({
     alignItems: center ?'center' : undefined,
-    backgroundColor:'#eee',
+    // backgroundColor:'#eee',
     display:'flex',
     flexDirection:'column',
     justifyContent:center ?'center' : undefined,
-    height:'calc(100vh - 20px)',
     padding:'10px 15px',
-    width:'calc(100vw - 30px)',
 } as React.CSSProperties);
 
 interface IContainerProps{

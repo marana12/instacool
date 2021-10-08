@@ -1,36 +1,48 @@
 import React,{Component} from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faThumbsUp,faRetweet } from '@fortawesome/free-solid-svg-icons';
-
+import { faThumbsUp,faRetweet,faThumbsDown,faHeart} from '@fortawesome/free-solid-svg-icons';
 const styles ={
-    buttons: (type:string) =>( {
-        flex:1,
+    buttons: (like?:boolean) =>( {
         textAlign:'center',
         padding:'10px 15px',
-        cursor:'pointer'
+        cursor:'pointer',
+        color:like? "red":"#eee",
     }as React.CSSProperties),
     footer:{
-            backgroundColor:"#eee",
             display:'flex',
             marginLeft:'-15px',
-            marginBottom:'-10px',
             width:"calc(100% + 30px)"
         }as React.CSSProperties,
+    totalLikes:{
+        fontWeight: 600,
+        color: 'rgba(var(--i1d,38,38,38),1)',
+        fontSize:'12px',
+    }
 }
 interface IFotterProps{
     like:()=>void,
     share:()=>void,
+    hasLike:boolean 
 }
 
 
 export default class Footer extends Component<IFotterProps>{
     public render(){
-        const {like,share} = this.props;
+        const {like,share,hasLike} = this.props;
+        
         return(
+           < React.Fragment>
             <div style={styles.footer}>
-                <div onClick={like} style={styles.buttons('like')}><FontAwesomeIcon icon={faThumbsUp}/> Like</div>
-                <div onClick={share} style={styles.buttons('share')}><FontAwesomeIcon icon={faRetweet}/> Share</div>
+                <div onClick={like} style={styles.buttons(hasLike)}>
+                    <FontAwesomeIcon className="far fa-heart" icon={faHeart}/>
+                </div>
+                <div onClick={share} style={styles.buttons()}><FontAwesomeIcon icon={faRetweet}/></div>
+
             </div>
+            <div style={{display:'flex'}}>
+                    <span style={styles.totalLikes}>125,26 likes</span>
+            </div>
+            </React.Fragment>
         )
     }
 }

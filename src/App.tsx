@@ -27,7 +27,7 @@ function App(props:IAppProps) {
       const {history} = props;
       if(user){
         const {loadInitialData} = props;
-        loadInitialData();
+         loadInitialData();
         if (['/','/login','/register'].indexOf(pathName) > -1 ){
           history.push('/app/newsfeed');
         }
