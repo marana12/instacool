@@ -1,0 +1,11 @@
+.InputPost{
+    width: 100%;
+}
+.InputPost input{
+    width: 90%;
+}
+input,input:focus, input:focus-visible{
+    border: none;
+    outline: none;
+
+}

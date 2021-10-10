@@ -1,31 +1,42 @@
 import React,{Component} from "react";
-import Footer from "./Footer";
-import Comment from "./Comment";
-
-const styleContainer ={
-    // backgroundColor:'#fff',
-    marginBottom:'10px',
-    border:'1px solid #ddd',    
-    padding:'10px 15px',
-} as React.CSSProperties
-
+import PostFooter from "./PostFooter";
+import '../styles/Post.css'
+import PostComment from "./PostComment";
+import { Timestamp } from "../../node_modules/@firebase/firestore/dist";
+import Moment from 'react-moment';
+import { ICommentPost, like } from "../ducks/Posts";
 
 interface IPostProps{
     img:string,
     like:()=>void,
     share:()=>void,
     hasLike:boolean,
-    comment?:string
+    comment?:string,
+    createdPost?:Date,
+    postId:string,
+    submitComment:(a:string)=>void,
 }
+
 export default class Post extends Component<IPostProps>{
+
     public render(){
         
-        const {img, like, share,hasLike,comment} = this.props;
+        const {img, like, share,hasLike,comment="",createdPost,postId,submitComment} = this.props;
+        
         return(
-            <div style={styleContainer}>
-                <img src={img} alt="kitten1" style={{width:'500px', height:'auto'}} />
-                <Footer hasLike={hasLike}  like={like} share={share}/>
-                <Comment comment={comment} />
+            <div className="Post">
+                <img src={img} alt="default" className="imgPost" onDoubleClick={like} />
+                <PostFooter comment={comment} hasLike={hasLike} like={like} share={share}/>
+                <div className="date">
+                    <span className="date-from-now">
+                    <Moment fromNow>
+                        {createdPost}
+                    </Moment>
+                    </span>
+                </div>
+                <hr />
+                <PostComment onSubmit={submitComment} postId={postId} submitComment={submitComment}/>
+
             </div>
         )
     }

@@ -8,6 +8,7 @@ interface IRequest extends express.Request{
         role:string
     }
 }
+
 admin.initializeApp({
     credential:admin.credential.applicationDefault(),
 });
@@ -54,7 +55,7 @@ export default () => {
         var hasLike:boolean=false;
         var countLikes:number = 0;
         snaps.forEach(x => Object.assign(result, {...x.data(), id: x.id}));
-        console.log(snaps)
+        console.log(result)
         if(result.id){
            await db.collection('likes').doc(result.id).delete();
         }
@@ -83,6 +84,27 @@ export default () => {
             userId:uid,
         });
         res.send({ id: result.id})
+
+
+    });
+
+    app.post('/posts/:postId/comment',async (req:IRequest ,res:any)=>{
+        const {uid} = req.user;
+        const {postId} = req.params;
+        const {comment} = JSON.parse(req.body);
+        if(!comment.comment){
+            res.status(404).send({
+                message:"comment field is empty"
+            });
+        }
+        await db.collection('comments').doc().set({
+            userId:uid,
+            postId,
+            comment:comment.comment,
+            createdAt: new Date(),})
+
+
+        res.sendStatus(204)
 
 
     });

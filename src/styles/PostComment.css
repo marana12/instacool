@@ -1,0 +1,28 @@
+.PostComment{
+    padding: 5px 15px;
+}
+.PostComment form{
+    display: flex;
+    justify-content: space-evenly;
+}
+.no-ready{
+    cursor: not-allowed;
+    pointer-events: none;
+    opacity: .3;
+
+}
+.ready{
+    cursor: pointer;
+}
+.submit-post{
+    background: #fff;
+    outline: none !important;
+    border: 0;
+    display: inline;
+    padding: 0;
+    position: relative;
+    color: #0095f6;
+    color: rgba(var(--d69,0,149,246),1);
+    font-weight: 600;
+
+}

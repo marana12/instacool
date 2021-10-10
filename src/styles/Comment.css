@@ -1,0 +1,19 @@
+.Comment{
+    display: flex;
+    flex-direction: column;
+    margin-top: 10px;
+
+
+}
+.comment-handle{
+    font-size:12px;
+    color: rgba(var(--i1d,38,38,38),1);
+}
+.user-name{
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.user-comment{
+}

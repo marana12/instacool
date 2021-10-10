@@ -1,0 +1,25 @@
+.Post{
+    background-color: #fff;
+    margin-bottom:10px;
+    border:1px solid #ddd;    
+    padding:10px 0px;
+}
+.Post .imgPost{
+    width: 500px;
+    height: auto;
+    cursor: pointer;
+}
+.Post .date{
+    padding: 10px 15px;
+}
+.date .date-from-now{
+    color: rgba(var(--f52,142,142,142),1);
+    font-size: 10px;
+    text-transform: uppercase;
+}
+.Post hr{
+    box-shadow: 0px 1px #eee;
+    border: none;
+    height: 5px;
+    box-shadow: 0px 1px #eee;
+}

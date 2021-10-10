@@ -15,8 +15,11 @@ export const setProfileImage = (payload:string) => ({
 export interface ILogin {
     first_name:string,
     last_name:string,
+    user_name:string,
+    phone:string,
     email:string,
-    password:string
+    password:string,
+    profileImg:string,
 }
 
 export default function reducer(state={},action:AnyAction) {
@@ -48,13 +51,13 @@ export const login = (login:ILogin) =>
 
 export const register = (register:ILogin) => 
   async (dispatch:Dispatch, getState:() => any, {auth,db}:IServices) => {
-            const{email,password,first_name,last_name} = register;
+            const{email,password,first_name,last_name,user_name} = register;
 
             const result = await createUserWithEmailAndPassword(auth,email,password)
                                 .then((userCredential:UserCredential) => {
                                     // Signed in 
                                     updateProfile(userCredential.user,{
-                                        displayName: first_name + ' ' + last_name 
+                                        displayName: first_name + ' ' + last_name,
                                         }).then(resp => resp)
                                         .catch(error => error);
                                         return userCredential;
@@ -70,7 +73,8 @@ export const register = (register:ILogin) =>
                 const data={
                     role:'user',
                     first_name:first_name,
-                    last_name:last_name
+                    last_name:last_name,
+                    user_name:user_name,
                 };
     
                 await setDoc(doc(fireStore, "users", uid), data);                        

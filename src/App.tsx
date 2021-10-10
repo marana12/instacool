@@ -1,5 +1,5 @@
 import React,{useEffect,useState} from 'react';
-import './App.css'; 
+import './styles/App.css'; 
 import {Route} from 'react-router-dom';
 import {History} from 'history';
 import NavBar from './components/NavBar';

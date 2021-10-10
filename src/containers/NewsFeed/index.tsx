@@ -6,10 +6,12 @@ import * as postsDuck from '../../ducks/Posts';
 import defaultImg from '../../assets/loader.gif';
 import Container from "../../components/Container";
 import Post from "../../components/Post";
+import  '../../styles/NewsFeed.css'
 interface INewsFeedProps{
     fetchPosts:() => void,
     like:(a:string)=>void,
     share:(a:string)=>void,
+    submitComment:(a:postsDuck.ICommentPost) =>void,
     fetched:boolean,
     loading:boolean,
     data:postsDuck.IDataPost,
@@ -30,9 +32,9 @@ interface INewsFeedProps{
          }
      }
     public render(){
-        const {data,loading,fetched,likePost} =this.props;
+        const {data,loading,fetched,likePost,submitComment} =this.props;
         return(
-            <div style={{marginTop:'40px'}}>
+            <main  className="NewsFeed" >
                 <Container center={false} >
                     {
                         fetched ?
@@ -43,24 +45,30 @@ interface INewsFeedProps{
                                         post.like=likePost.hasLike || false
                                     }
                                 }
-                                return <div key={x} style={{margin:'3px auto'}}>
+                                return <div key={x} className="card" >
+                                    
                                             <Post
                                                 img={ post.imageUrl}
                                                 like={this.handleLike(x)}
                                                 share={this.handleShare(x)}
+                                                submitComment={this.handleComment(x)}
                                                 hasLike={post.like}
-                                                comment={post.comment}/>
+                                                comment={post.comment}
+                                                createdPost ={post.createdAt.toDate()}
+                                                postId={x}/>
                                             
                                     </div>
                             })
                             :
-                            <div style={{margin:'3px auto'}}>
+                            <div className="card" >
                                                 <Post
                                                 img={defaultImg}
                                                 like={this.handleLike('')}
                                                 share={this.handleShare('')}
+                                                submitComment={this.handleComment('')}
                                                 hasLike={false}
-                                                comment={''}/>
+                                                comment={''}
+                                                postId=""/>
                                             
                                     </div>
 
@@ -69,7 +77,7 @@ interface INewsFeedProps{
 
                 </Container>
                 
-            </div>
+            </main>
         )
     }
     private handleLike = (id:string) => () =>{
@@ -79,6 +87,15 @@ interface INewsFeedProps{
     private handleShare = (id:string) => () =>{
         const {share} = this.props;
         share(id);
+    }
+    private handleComment = (id:string) => (comment:any) =>{
+        var setComment = {
+            id,comment
+        } as postsDuck.ICommentPost;
+
+
+        const {submitComment} = this.props;
+        submitComment(setComment);
     }
 }
 
