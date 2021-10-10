@@ -55,7 +55,6 @@ export default () => {
         var hasLike:boolean=false;
         var countLikes:number = 0;
         snaps.forEach(x => Object.assign(result, {...x.data(), id: x.id}));
-        console.log(result)
         if(result.id){
            await db.collection('likes').doc(result.id).delete();
         }

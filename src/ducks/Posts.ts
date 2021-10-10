@@ -198,7 +198,6 @@ export const submitComment = (commentPost:ICommentPost) =>
             return;
         }
         const {id,comment} = commentPost;
-        console.log(comment)
         const token = await auth.currentUser.getIdToken();
         const response = await fetch('/api/posts/' + id + '/comment', {
             method: 'POST',
