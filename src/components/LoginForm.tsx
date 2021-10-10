@@ -17,7 +17,7 @@ import { ILogin } from "../ducks/Users";
                 <Field label="Password" name="password" type="password" placeholder="Password" component={Input}/>
                 <Button block={true}>Send</Button>
                 <Center>
-                <Link to='/register'>new user?</Link>
+                    <Link to='/register'>new user?</Link>
               </Center>
             </form>
 

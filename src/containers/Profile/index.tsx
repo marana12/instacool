@@ -10,31 +10,9 @@ import Card from "../../components/Card";
 import { submit } from "redux-form";
 import profile from '../../assets/profile.png';
 import defaultImg from '../../assets/loader.gif';
+import '../../styles/Profile.css'
 const {auth} = services;
-const style={
-    container:{
-        margin:'40px 80px',
-        padding:'15px',
-    }as React.CSSProperties,
-    topRow:{
-        display:'flex',
-        justifyContent:'space-between',
-    }as React.CSSProperties,
-    row:{
-        display: 'flex',
-        justifyContent: 'center',
-        flexDirection: 'row',
-        marginBottom:'10px'
-    }as React.CSSProperties,
-    imgRow:{
-        marginLeft:'15px',
-        marginRight:'15px',
-    } as React.CSSProperties,
-    img:{
-        width:'330px',
-        height:'auto',
-    }as React.CSSProperties,
-}
+
 export interface IProfileProps{
     fetchPosts:() => void,
     submitProfileImg:() =>void,
@@ -65,32 +43,32 @@ export interface IProfileProps{
         const { data,submitProfileImg,handleProfileImageSubmit,profileImage,fetched } = this.props;
        
         return(
-            <div style={style.container}>
-                <div style={style.topRow}>
+            <div className="Profile">
+                <div className="top-row">
                     <ProfileImg onSubmit={handleProfileImageSubmit} submitProfileImg={submitProfileImg} handleProfileImageSubmit={handleProfileImageSubmit} profileImage={profileImage} />
                     <Button>Add</Button>
                 </div>
-                <div style={style.imgRow}>
+                <div className="img-row">
                     
                 {   fetched ?
                         data.map((x, i)=>
-                            <div key={i} style={style.row}>
+                            <div key={i} className="row" >
                                 {x.map((y,ind) => 
-                                        <Card key={ind}><img style={style.img} src={(y.imageUrl)}/></Card>
+                                        <Card key={ind}><img className="img" src={(y.imageUrl)}/></Card>
 
                                     )}
                             </div>
                         ):
                         <React.Fragment>
-                            <div style={style.row}>
-                                <Card ><img style={style.img} src={defaultImg}/></Card>
-                                <Card ><img style={style.img} src={defaultImg}/></Card>
-                                <Card ><img style={style.img} src={defaultImg}/></Card>
+                            <div className="row">
+                                <Card ><img className="img" src={defaultImg}/></Card>
+                                <Card ><img className="img" src={defaultImg}/></Card>
+                                <Card ><img className="img" src={defaultImg}/></Card>
                             </div> 
-                            <div style={style.row}>
-                                <Card ><img style={style.img} src={defaultImg}/></Card>
-                                <Card ><img style={style.img} src={defaultImg}/></Card>
-                                <Card ><img style={style.img} src={defaultImg}/></Card>
+                            <div className="row">
+                                <Card ><img className="img" src={defaultImg}/></Card>
+                                <Card ><img className="img" src={defaultImg}/></Card>
+                                <Card ><img className="img" src={defaultImg}/></Card>
                             </div> 
                         </React.Fragment>
 
