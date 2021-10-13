@@ -9,6 +9,10 @@
     height: auto;
     cursor: pointer;
 }
+.Post .comments-section{
+    margin-top: 15px;
+    padding: 0 15px;
+}
 .Post .date{
     padding: 10px 15px;
 }

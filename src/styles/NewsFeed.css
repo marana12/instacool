@@ -1,5 +1,8 @@
 .NewsFeed{
     margin-top: 40px;
+    max-width: 1040px;
+    margin-left: auto;
+    margin-right: auto;
 }
 .card{
     margin: 0 auto;

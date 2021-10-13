@@ -1,14 +1,15 @@
 .Profile{
-    margin: 40px 80px;
+    margin: 40px auto;
     padding: 15px;
+    max-width: 1040px;
 }
 .top-row{
     display: flex;
     justify-content: space-between;
+    margin-top: 20px;
 }
 .img-row{
-    margin-left: 15px;
-    margin-right: 15px;
+    margin: 20px 15px;
 }
 .row{
     display: flex;
@@ -18,6 +19,6 @@
 }
 
 .img{
-   width: 330px;
+   width: 100%;
    height: auto;     
 }

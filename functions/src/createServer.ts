@@ -57,6 +57,7 @@ export default () => {
         snaps.forEach(x => Object.assign(result, {...x.data(), id: x.id}));
         if(result.id){
            await db.collection('likes').doc(result.id).delete();
+           hasLike=false;
         }
         if(!result.id){
             await db.collection('likes').doc().set({
@@ -66,11 +67,48 @@ export default () => {
             });
             hasLike = true
          }
+        const snapsTotal = await db.collection('likes')
+        .where("postId","==",postId)
+        .get();
+        const totalLikes = snapsTotal.size;
+         console.log(totalLikes)
         res.status(200).send({
             id:postId,
-            hasLike
+            hasLike,
+            totalLikes
         });
     });
+
+    app.get('/posts/:postId/getlike',async (req:IRequest ,res:any)=>{
+        const {uid} = req.user;
+        const {postId} = req.params;
+        const snaps = await db.collection('likes')
+            .where('userId','==',uid)
+            .where("postId","==",postId)
+            .limit(1)
+            .get();
+
+        const result:{id?:string} = {};
+        var hasLike:boolean=false;
+        snaps.forEach(x => {
+            Object.assign(result, {...x.data(), id: x.id})
+        });
+
+        if(result.id){
+            hasLike = true
+         }
+         const snapsTotal = await db.collection('likes')
+         .where("postId","==",postId)
+         .get();
+
+        const totalLikes = snapsTotal.size;
+        res.status(200).send({
+            id:postId,
+            hasLike,
+            totalLikes
+        });
+    });
+
 
     app.get('/posts/:postId/share',async (req:IRequest ,res:any)=>{
         const {uid} = req.user;
@@ -104,6 +142,35 @@ export default () => {
 
 
         res.sendStatus(204)
+
+
+    });
+
+    app.get('/posts/:postId/getcomment',async (req:IRequest ,res:any)=>{
+        const {postId} = req.params;
+
+        const snaps = await db.collection('comments')
+        .where("postId","==",postId)
+        .get();
+
+        const result:{id?:string} = {};
+
+        snaps.forEach(x => {
+            
+            Object.assign(result, {...x.data(), id: x.id})
+        });
+        res.sendStatus(204)
+
+
+    });
+    app.get('/profile/:userId/getprofilepost',async (req:IRequest ,res:any)=>{
+        const {userId} = req.params;
+        console.log(userId)
+        const snaps = await db.collection('users')
+        .doc(userId)
+        .get();
+        const own_post= snaps.data();
+        res.status(200).send(own_post)
 
 
     });

@@ -2,19 +2,23 @@ import React,{Component} from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Comment from "./Comment";
 import '../styles/PostFooter.css';
-import { faThumbsUp,faRetweet,faThumbsDown,faHeart} from '@fortawesome/free-solid-svg-icons';
+import { faRetweet,faHeart} from '@fortawesome/free-solid-svg-icons';
+import { Iprofile } from '../ducks/Posts';
 
 interface IFotterProps{
     like:()=>void,
     share:()=>void,
     hasLike:boolean ,
     comment:string,
+    totalLikes:number,
+    ownProfilePost:Iprofile
 }
 
 
 export default class PostFooter extends Component<IFotterProps>{
+
     public render(){
-        const {like,share,hasLike,comment} = this.props;
+        const {like,share,hasLike,comment,totalLikes,ownProfilePost} = this.props;
         
         return(
            <div className='PostFooter'>
@@ -26,10 +30,20 @@ export default class PostFooter extends Component<IFotterProps>{
 
                 </div>
                 <div className="likes-handle" >
-                        <span >125,26 likes</span>
+                        {
+                            totalLikes === 1 ?
+
+                            <span>{totalLikes} like</span>
+                            :
+                            totalLikes > 0 ?
+                            <span>{totalLikes} likes</span>
+                            :
+                            <span></span>
+                        }
+                        
                 </div>
                 
-                <Comment comment={comment} />
+                <Comment ownProfilePost={ownProfilePost} comment={comment} />
             </div>
         )
     }

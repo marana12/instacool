@@ -1,6 +1,6 @@
 import { AnyAction, Dispatch } from "redux";
 import { IServices } from '../services';
-import { getDocs, collection, Timestamp, getDoc, doc, orderBy, query, limit,updateDoc } from 'firebase/firestore';
+import { getDocs, collection, Timestamp, getDoc, doc, orderBy, query, limit,updateDoc,where } from 'firebase/firestore';
 import { ref, getDownloadURL, uploadBytes, } from "firebase/storage";
 import { fireStore, storage } from '../services/firebase'
 import { download } from '../utils';
@@ -16,20 +16,33 @@ export interface IPost {
     userId: string,
     createdAt: Timestamp,
     imageUrl: string,
-    like:boolean
+    like:boolean,
+    totalLikes:number,
+    ownProfilePost:Iprofile,
+    commentPost:ICommentPost
 }
-
+export interface Iprofile{
+    userId:string,
+    user_name:string,
+    first_name:string,
+    last_name:string,
+    profileImg:string,
+}
 export interface IDataPost {
     [key: string]: IPost,
 
 }
+
 export interface ILikePost{
     id:string,
-    hasLike?:boolean
+    hasLike?:boolean,
+    totalLikes:number
 }
 export interface ICommentPost{
-    id:string,
-    comment:string
+    postId:string,
+    comment:string,
+    uiserId:string,
+    profileImg:string
 }
 const fetchStart = () => ({
     type: START
@@ -105,40 +118,55 @@ export const fetchPosts = () =>
                 return;
             }
             const token = await auth.currentUser.getIdToken()
-
+            const {uid} = auth.currentUser;
             const q = query(collection(fireStore, "posts"), orderBy('createdAt', 'desc'),)
             const snapsPosts = await getDocs(q);
             const posts: any = {};
 
-            snapsPosts.forEach(p => posts[p.id] = p.data());
+            snapsPosts.forEach(p => {
+                posts[p.id] = p.data();
+            });
             
-            const imgIds: Array<any> = await Promise.all(Object.keys(posts)
-                .map(async x => {
-                    const url = await getDownloadURL(ref(storage, `posts/${x}.jpg`));
-                    return [x, url]
-                }));
 
-            const likesArr: Array<any> = await Promise.all(Object.keys(posts)
+
+            const postsDataArr: Array<any> = await Promise.all(Object.keys(posts)
                 .map(async x => {
-                    const result = await fetch('/api/posts/' + x + '/like', {
+                    console.log(posts[x].userId)
+                    const profliePost =  await fetch('/api/profile/' + posts[x].userId + '/getprofilepost', {
+                        headers: {
+                            authorization: token
+                        }
+                    }).then(resp => resp.json());
+                    console.log(profliePost)
+                    const url = await getDownloadURL(ref(storage, `posts/${x}.jpg`));
+                    const result = await fetch('/api/posts/' + x + '/getlike', {
                         headers: {
                             authorization: token
                         }
                     });
                     const message = await result.json();
-                    return [x, message.hasLike]
+                    return [x, url,message.hasLike,message.totalLikes,profliePost]
                 }));
+
 
             const keyedImages: any = {}
             const keyedLikes: any = {}
-            imgIds.forEach(x => keyedImages[x[0]] = x[1]);
-            likesArr.forEach(x => keyedLikes[x[0]] = x[1])
+            const keyedTotalLikes: any = {}
+            const keyedProfilePost:any = {};
+            postsDataArr.forEach(x => {
+                keyedImages[x[0]] = x[1];
+                keyedLikes[x[0]] = x[2];
+                keyedTotalLikes[x[0]] = x[3];
+                keyedProfilePost[x[0]] = x[4];
+            });
             Object.keys(posts).forEach(x => {
                 
                 posts[x] = {
                 ...posts[x],
                 imageUrl: keyedImages[x],
-                like:keyedLikes[x]
+                like:keyedLikes[x],
+                totalLikes:keyedTotalLikes[x],
+                ownProfilePost:keyedProfilePost[x]
             }
         });
 
@@ -161,6 +189,7 @@ export const like = (id: string) =>
             }
         })
         const message = await result.json();
+        console.log(message)
         dispatch(setLike(message))
     }
 
@@ -197,9 +226,9 @@ export const submitComment = (commentPost:ICommentPost) =>
         if (!auth.currentUser) {
             return;
         }
-        const {id,comment} = commentPost;
+        const {postId,comment} = commentPost;
         const token = await auth.currentUser.getIdToken();
-        const response = await fetch('/api/posts/' + id + '/comment', {
+        const response = await fetch('/api/posts/' + postId + '/comment', {
             method: 'POST',
             headers: {
                 authorization: token,
@@ -210,6 +239,7 @@ export const submitComment = (commentPost:ICommentPost) =>
             }),
           })
     }
+
 export const handleProfileImageSubmit = (payload: { profileImg: File }) =>
     async (dispatch: Dispatch, getState: () => any, { auth }: IServices) => {
         if (!auth.currentUser) {

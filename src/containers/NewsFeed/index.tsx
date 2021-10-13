@@ -42,7 +42,8 @@ interface INewsFeedProps{
                                 const post = data[x]
                                 if(likePost.id){
                                     if(x === likePost.id){
-                                        post.like=likePost.hasLike || false
+                                        post.like=likePost.hasLike || false;
+                                        post.totalLikes = likePost.totalLikes
                                     }
                                 }
                                 return <div key={x} className="card" >
@@ -55,22 +56,16 @@ interface INewsFeedProps{
                                                 hasLike={post.like}
                                                 comment={post.comment}
                                                 createdPost ={post.createdAt.toDate()}
-                                                postId={x}/>
+                                                postId={x}
+                                                ownProfilePost={post.ownProfilePost}
+                                                totalLikes={post.totalLikes}/>
                                             
                                     </div>
                             })
                             :
                             <div className="card" >
-                                                <Post
-                                                img={defaultImg}
-                                                like={this.handleLike('')}
-                                                share={this.handleShare('')}
-                                                submitComment={this.handleComment('')}
-                                                hasLike={false}
-                                                comment={''}
-                                                postId=""/>
-                                            
-                                    </div>
+                                <h4>Loading...</h4>
+                            </div>
 
                     }
                   
@@ -88,9 +83,9 @@ interface INewsFeedProps{
         const {share} = this.props;
         share(id);
     }
-    private handleComment = (id:string) => (comment:any) =>{
+    private handleComment = (postId:string) => (comment:any) =>{
         var setComment = {
-            id,comment
+            postId,comment
         } as postsDuck.ICommentPost;
 
 
@@ -100,14 +95,14 @@ interface INewsFeedProps{
 }
 
 const mapStateToProps = (state:any) => {
-    const {Posts: {data,fetched,fetching,likePost}} = state;
+    const {Posts: {data,fetched,fetching,likePost,ownProfilePost}} = state;
     const loading = fetching || !fetched;
     return {
         loading,
         fetched,
         data,
-        likePost
-        
+        likePost,
+        ownProfilePost,
     }
 };
 const mapDispatchToProps = (dispatch:ThunkDispatch<any,any,any>) => bindActionCreators(postsDuck, dispatch);
