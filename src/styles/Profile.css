@@ -3,10 +3,21 @@
     padding: 15px;
     max-width: 1040px;
 }
+.Profile .add-post-btn{
+    height: fit-content;
+    background-color: #2196f3;
+    align-self: center;
+    margin-top: 10px;
+}
 .top-row{
     display: flex;
-    justify-content: space-between;
+    gap:30px;
     margin-top: 20px;
+    margin-bottom: 50px;
+}
+.line{
+    border-color: #eeeeee47;
+    border-width: 0.1px;
 }
 .img-row{
     margin: 20px 15px;

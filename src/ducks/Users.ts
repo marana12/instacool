@@ -1,15 +1,21 @@
 import { AnyAction, Dispatch } from "redux";
 import {IServices} from '../services';
 import {signInWithEmailAndPassword, createUserWithEmailAndPassword,updateProfile,UserCredential } from "firebase/auth";
-import {setDoc,doc  } from 'firebase/firestore';
-import { fireStore } from '../services/firebase'
-import { type } from "os";
+import {setDoc,doc, updateDoc  } from 'firebase/firestore';
+import { fireStore, storage } from '../services/firebase'
+import { Iprofile } from "./Posts";
+import { ref } from "@firebase/storage";
+import { getDownloadURL, uploadBytes } from "firebase/storage";
 
 const SET_PROFILE_IMAGE='user/set-profile-image';
 const GET_PROFILE_IMAGE='user/get-profile-image';
-
+const SET_CURRENT_PROFILE='user/set-current-profile';
 export const setProfileImage = (payload:string) => ({
     type:SET_PROFILE_IMAGE,
+    payload,
+})
+export const setCurrentProfile = (payload:Iprofile) => ({
+    type:SET_CURRENT_PROFILE,
     payload,
 })
 export interface ILogin {
@@ -20,6 +26,7 @@ export interface ILogin {
     email:string,
     password:string,
     profileImg:string,
+    profile:Iprofile
 }
 
 export default function reducer(state={},action:AnyAction) {
@@ -29,6 +36,13 @@ export default function reducer(state={},action:AnyAction) {
                 ...state,
                 profileImage:action.payload
             }
+        }
+        case SET_CURRENT_PROFILE:{
+            return{
+                ...state,
+                profile:action.payload
+            }
+            
         } 
         default:{
             return state;
@@ -85,5 +99,42 @@ export const register = (register:ILogin) =>
     
 export const loadUserInitialData = () =>
     async (dispatch:Dispatch, getState:() => any, {auth}:IServices) =>{
-        console.log(auth)
+        if(!auth.currentUser){
+            return;
+        }
+        const token = await auth.currentUser.getIdToken()
+        const {uid} = auth.currentUser;
+        const profliePost =  await fetch('/api/profile/' + uid + '/getprofilepost', {
+            headers: {
+                authorization: token
+            }
+        }).then(resp => resp.json());
+
+        dispatch(setProfileImage(profliePost.profileImg));
+        dispatch(setCurrentProfile(profliePost))
+    }
+
+    export const handleProfileImageSubmit = (payload: { profileImg: File }) =>
+    async (dispatch: Dispatch, getState: () => any, { auth }: IServices) => {
+        if (!auth.currentUser) {
+            return;
+        }
+        const { uid } = auth.currentUser;
+        const type = payload.profileImg.name.split('.');
+        const storageRef = ref(storage, 'profileImages/' + uid + '.' + type[1]);
+        const response = await uploadBytes(storageRef, payload.profileImg).then((snapshot) => {
+            return snapshot;
+        });
+
+        const url = await getDownloadURL(response.ref);
+        console.log(url)
+        
+        const data={
+            profileImg:url
+        };
+
+        await updateDoc(doc(fireStore, "users", uid), data);
+
+        dispatch(setProfileImage(url));
+
     }

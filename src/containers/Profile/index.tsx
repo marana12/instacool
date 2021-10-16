@@ -1,5 +1,6 @@
 import React,{Component} from "react";
 import * as postsDuck from '../../ducks/Posts';
+import * as usersDuck from '../../ducks/Users';
 import { connect } from "react-redux";
 import { ThunkDispatch } from "redux-thunk";
 import { bindActionCreators } from "redux";
@@ -8,9 +9,10 @@ import ProfileImg from "../../components/ProfileImg";
 import Button from "../../components/Button";
 import Card from "../../components/Card";
 import { submit } from "redux-form";
-import profile from '../../assets/profile.png';
+import defaulProfileImg from '../../assets/profile.png';
 import defaultImg from '../../assets/loader.gif';
 import '../../styles/Profile.css'
+
 const {auth} = services;
 
 export interface IProfileProps{
@@ -20,7 +22,8 @@ export interface IProfileProps{
     fetched:boolean,
     loading:boolean,
     data:postsDuck.IPost[][],
-    profileImage:string
+    profileImage:string,
+    profile:postsDuck.Iprofile
     
 }
 
@@ -40,14 +43,19 @@ export interface IProfileProps{
         }
     }
     public render(){
-        const { data,submitProfileImg,handleProfileImageSubmit,profileImage,fetched } = this.props;
-       
+        const { data,submitProfileImg,handleProfileImageSubmit,fetched,profile ,profileImage} = this.props;
+        
         return(
             <div className="Profile">
                 <div className="top-row">
                     <ProfileImg onSubmit={handleProfileImageSubmit} submitProfileImg={submitProfileImg} handleProfileImageSubmit={handleProfileImageSubmit} profileImage={profileImage} />
-                    <Button>Add</Button>
+                    <div>
+                        <div>{profile?profile.user_name: ''}</div>
+                        <Button className="add-post-btn">Add post</Button>
+
+                    </div>
                 </div>
+                <hr className="line"/>
                 <div className="img-row">
                     
                 {   fetched ?
@@ -88,10 +96,11 @@ export interface IProfileProps{
 }
 const mapStateToProps = (state:any) => {
     const {Posts: {data,fetched,fetching}} = state;
-    const {Users: {profileImage:tempPI}} = state;
+    const {Users: {profileImage:tempPI,profile}} = state;
 
     const loading = fetching || !fetched;
-    const profileImage = tempPI || profile;
+    const profileImage = tempPI || defaulProfileImg;
+
     const filteredPosts = Object.keys(data).reduce((acc,el)=>{
         if(data[el].userId !== auth.currentUser?.uid){
             return acc;
@@ -114,10 +123,12 @@ const mapStateToProps = (state:any) => {
         fetched,
         data:posts,
         profileImage,
+        profile
     }
 };
 const mapDispatchToProps = (dispatch:ThunkDispatch<any,any,any>) => bindActionCreators({
     ...postsDuck,
+    ...usersDuck,
     submitProfileImg:() => submit('profileImg')},
     dispatch);
 export default connect(mapStateToProps,mapDispatchToProps)(Profile);

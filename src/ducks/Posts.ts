@@ -4,8 +4,7 @@ import { getDocs, collection, Timestamp, getDoc, doc, orderBy, query, limit,upda
 import { ref, getDownloadURL, uploadBytes, } from "firebase/storage";
 import { fireStore, storage } from '../services/firebase'
 import { download } from '../utils';
-import { setProfileImage } from "./Users";
-import ProfileImg from "../components/ProfileImg";
+
 const START = 'posts/fetch-start';
 const SUCCESS = 'posts/fetch-success';
 const ERROR = 'posts/fetch-error';
@@ -131,13 +130,11 @@ export const fetchPosts = () =>
 
             const postsDataArr: Array<any> = await Promise.all(Object.keys(posts)
                 .map(async x => {
-                    console.log(posts[x].userId)
                     const profliePost =  await fetch('/api/profile/' + posts[x].userId + '/getprofilepost', {
                         headers: {
                             authorization: token
                         }
                     }).then(resp => resp.json());
-                    console.log(profliePost)
                     const url = await getDownloadURL(ref(storage, `posts/${x}.jpg`));
                     const result = await fetch('/api/posts/' + x + '/getlike', {
                         headers: {
@@ -189,7 +186,6 @@ export const like = (id: string) =>
             }
         })
         const message = await result.json();
-        console.log(message)
         dispatch(setLike(message))
     }
 
@@ -240,27 +236,3 @@ export const submitComment = (commentPost:ICommentPost) =>
           })
     }
 
-export const handleProfileImageSubmit = (payload: { profileImg: File }) =>
-    async (dispatch: Dispatch, getState: () => any, { auth }: IServices) => {
-        if (!auth.currentUser) {
-            return;
-        }
-        const { uid } = auth.currentUser;
-        const type = payload.profileImg.name.split('.');
-        const storageRef = ref(storage, 'profileImages/' + uid + '.' + type[1]);
-        const response = await uploadBytes(storageRef, payload.profileImg).then((snapshot) => {
-            return snapshot;
-        });
-
-        const url = await getDownloadURL(response.ref);
-
-        
-        const data={
-            profileImg:url
-        };
-
-        await updateDoc(doc(fireStore, "users", uid), data);
-
-        dispatch(setProfileImage(url));
-
-    }
